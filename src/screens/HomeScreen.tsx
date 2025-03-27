@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { styles } from './styles'
+import Svg, { Circle, G, Text as SvgText } from 'react-native-svg';
 
 
 
@@ -17,13 +18,30 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
     pecasRejeitadas: '',
     taxaExecucaoIdeal: '',
     unidadeTaxaExecucao: 'minutos'
-  });  const [showHelp, setShowHelp] = useState(false);
+  });
+
+  const validarCampos = () => {
+    return (
+      inputs.duracaoTurno !== '' &&
+      inputs.pausasCurtas !== '' &&
+      inputs.pausaRefeicao !== '' &&
+      inputs.tempoInatividade !== '' &&
+      inputs.totalPecas !== '' &&
+      inputs.pecasRejeitadas !== '' &&
+      inputs.taxaExecucaoIdeal !== ''
+    );
+  };
+  
+  const [showHelp, setShowHelp] = useState(false);
   const [oeeResult, setOeeResult] = useState<{
     disponibilidade: number;
     desempenho: number;
     qualidade: number;
     total: number;
   } | null>(null);  const calcularOEE = () => {
+    if (!validarCampos()) {
+      return;
+    }
     const valores = {
       duracaoTurno: parseFloat(inputs.duracaoTurno) || 0,
       pausasCurtas: parseFloat(inputs.pausasCurtas) || 0,
@@ -37,6 +55,8 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
     const duracaoTurnoMinutos = inputs.unidadeTurno === 'horas' 
       ? valores.duracaoTurno * 60 
       : valores.duracaoTurno;
+
+    
 
     const tempoProducaoPlanejado = duracaoTurnoMinutos - (valores.pausasCurtas + valores.pausaRefeicao);
 
@@ -64,6 +84,85 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
       total: Number(oeeTotal.toFixed(2))
     });
   };
+
+  interface CircularProgressProps {
+    size: number;
+    strokeWidth: number;
+    progress: number;
+    color: string;
+    label?: string;
+    small?: boolean;
+  }
+  
+  const CircularProgress = ({
+    size,
+    strokeWidth,
+    progress,
+    color,
+    label,
+    small = false
+  }: CircularProgressProps) => {
+    const radius = (size - strokeWidth) / 2;
+    const circumference = radius * 2 * Math.PI;
+    const strokeDashoffset = circumference - (progress / 100) * circumference;
+  
+    return (
+      <View style={{ alignItems: 'center', margin: small ? 5 : 10 }}>
+        <Svg width={size} height={size}>
+          <G rotation="-90" origin={`${size / 2}, ${size / 2}`}>
+            <Circle
+              stroke="#E0E0E0"
+              fill="transparent"
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              strokeWidth={strokeWidth}
+            />
+            <Circle
+              stroke={color}
+              fill="transparent"
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              strokeWidth={strokeWidth}
+              strokeDasharray={`${circumference}, ${circumference}`}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+            />
+          </G>
+          <SvgText
+            x={size / 2}
+            y={size / 2 + (small ? 5 : 10)}
+            textAnchor="middle"
+            fill={color}
+            fontSize={small ? 14 : 40} 
+            fontWeight="bold"
+          >
+            {`${progress}%`}
+          </SvgText>
+        </Svg>
+        {label && (
+          <Text style={[
+            label === 'OEE Total' ? { 
+              fontSize: 40, 
+              fontWeight: 'bold',
+              color,
+              marginTop: 10
+            } : { 
+              color, 
+              marginTop: 5, 
+              fontWeight: '600',
+              fontSize: 16
+            }
+          ]}>
+            {label}
+          </Text>
+        )}
+      </View>
+    );
+  };
+
+
 
   const getOEEStatus = (oee: number) => {
     if (oee >= 85) return { text: 'Excelente', color: '#4CAF50' };
@@ -224,30 +323,65 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
             </View>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={calcularOEE}>
-            <Text style={styles.buttonText}>Calcular OEE</Text>
+          <TouchableOpacity 
+              style={[
+                styles.button,
+                !validarCampos() && styles.buttonDisabled
+              ]} 
+              onPress={calcularOEE}
+              disabled={!validarCampos()}
+            >
+              <Text style={styles.buttonText}>Calcular OEE</Text>
           </TouchableOpacity>
         </View>
 
         {oeeResult !== null && (
           <View style={styles.resultCard}>
             <Text style={styles.resultTitle}>Resultado OEE</Text>
-            <View style={styles.componentResults}>
-              <Text style={styles.componentText}>Disponibilidade: {oeeResult.disponibilidade}%</Text>
-              <Text style={styles.componentText}>Desempenho: {oeeResult.desempenho}%</Text>
-              <Text style={styles.componentText}>Qualidade: {oeeResult.qualidade}%</Text>
+            
+            {/* Gráficos das métricas individuais */}
+            <View style={styles.metricsContainer}>
+              <CircularProgress
+                size={80}
+                strokeWidth={8}
+                progress={oeeResult.disponibilidade}
+                color="#FFA500" // Laranja
+                label="Disponibilidade"
+                small
+              />
+              <CircularProgress
+                size={80}
+                strokeWidth={8}
+                progress={oeeResult.desempenho}
+                color="#4CAF50" // Verde
+                label="Desempenho"
+                small
+              />
+              <CircularProgress
+                size={80}
+                strokeWidth={8}
+                progress={oeeResult.qualidade}
+                color="#9C27B0" // Roxo
+                label="Qualidade"
+                small
+              />
             </View>
-            <Text style={styles.resultValue}>{oeeResult.total}%</Text>
-            <Text style={[
-              styles.resultStatus,
-              { color: getOEEStatus(oeeResult.total).color }
-            ]}>
-              {getOEEStatus(oeeResult.total).text}
-            </Text>
+            <View style={styles.oeeTotalContainer}>
+            <CircularProgress
+                size={200}
+                strokeWidth={12}
+                progress={oeeResult.total}
+                color="#1a73e8"
+                label="OEE Total" 
+              />
+              <Text style={[
+                styles.resultStatus,
+                { color: getOEEStatus(oeeResult.total).color }
+              ]}>
+                {getOEEStatus(oeeResult.total).text}
+              </Text>
+            </View>
           </View>
-
-          
-          
         )}
         <View style={styles.watermarkContainer}>
         <TouchableOpacity 
@@ -262,71 +396,187 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
      </ScrollView>
      
 
-       <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showHelp}
-          onRequestClose={() => setShowHelp(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Guia do OEE</Text>
-                <TouchableOpacity onPress={() => setShowHelp(false)}>
-                  <MaterialCommunityIcons name="close" size={24} color="#666" />
-                </TouchableOpacity>
+     <Modal
+      animationType="slide"
+      transparent={true}
+      visible={showHelp}
+      onRequestClose={() => setShowHelp(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <View style={styles.modalTitleContainer}>
+              <MaterialCommunityIcons name="information-outline" size={24} color="#1a73e8" />
+              <Text style={styles.modalTitle}>Guia Completo do OEE</Text>
+            </View>
+            <TouchableOpacity 
+              onPress={() => setShowHelp(false)}
+              style={styles.closeButton}
+            >
+              <MaterialCommunityIcons name="close" size={24} color="#666" />
+            </TouchableOpacity>
+          </View>
+          
+          <ScrollView 
+            style={styles.modalScroll}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Seção OEE */}
+            <View style={styles.helpSection}>
+              <View style={styles.sectionHeader}>
+                <MaterialCommunityIcons name="chart-donut" size={20} color="#1a73e8" />
+                <Text style={styles.helpSectionTitle}>O que é OEE?</Text>
+              </View>
+              <Text style={styles.helpText}>
+                O OEE (Overall Equipment Effectiveness) é um indicador que mede a eficiência real de um equipamento ou linha de produção, considerando três fatores críticos:
+              </Text>
+              
+              <View style={styles.factorContainer}>
+                <View style={[styles.factorPill, {backgroundColor: '#FFF3E0'}]}>
+                  <MaterialCommunityIcons name="clock-outline" size={16} color="#FFA500" />
+                  <Text style={[styles.helpSubtitle, {color: '#FFA500'}]}>Disponibilidade</Text>
+                </View>
+                <Text style={styles.factorDescription}>
+                  Mede o tempo produtivo real comparado ao tempo planejado
+                </Text>
               </View>
               
-              <ScrollView style={styles.modalScroll}>
-                <Text style={styles.helpSectionTitle}>O que é OEE?</Text>
-                <Text style={styles.helpText}>
-                  O OEE é um índice que avalia três principais fatores:
+              <View style={styles.factorContainer}>
+                <View style={[styles.factorPill, {backgroundColor: '#E8F5E9'}]}>
+                  <MaterialCommunityIcons name="speedometer" size={16} color="#4CAF50" />
+                  <Text style={[styles.helpSubtitle, {color: '#4CAF50'}]}>Desempenho</Text>
+                </View>
+                <Text style={styles.factorDescription}>
+                  Avalia se a produção está ocorrendo na velocidade ideal
                 </Text>
-                
-                <Text style={styles.helpSubtitle}>Disponibilidade:</Text>
-                <Text style={styles.helpText}>Mede o tempo produtivo real comparado ao tempo planejado.</Text>
-                
-                <Text style={styles.helpSubtitle}>Desempenho:</Text>
-                <Text style={styles.helpText}>Avalia se a produção está ocorrendo na velocidade ideal.</Text>
-                
-                <Text style={styles.helpSubtitle}>Qualidade:</Text>
-                <Text style={styles.helpText}>Indica a proporção de peças boas em relação ao total produzido.</Text>
-                
-                <Text style={styles.helpText}>
-                  Esses três fatores combinados resultam no OEE Total, que fornece uma visão completa da eficiência operacional da linha de produção.
+              </View>
+              
+              <View style={styles.factorContainer}>
+                <View style={[styles.factorPill, {backgroundColor: '#F3E5F5'}]}>
+                  <MaterialCommunityIcons name="quality-high" size={16} color="#9C27B0" />
+                  <Text style={[styles.helpSubtitle, {color: '#9C27B0'}]}>Qualidade</Text>
+                </View>
+                <Text style={styles.factorDescription}>
+                  Indica a proporção de peças boas em relação ao total produzido
                 </Text>
-
-                {/* Nova seção adicionada com as fórmulas */}
-                <Text style={styles.helpSectionTitle}>Como é calculado?</Text>
-                <Text style={styles.helpText}>
-                🔹 Disponibilidade = (Tempo de Operação / Tempo de Produção Planejado) x 100
-                </Text>
-                <Text style={styles.helpText}>
-                🔹 Desempenho = ((Total de Peças / Tempo de Operação) / Taxa de Execução Ideal) x 100
-                </Text>
-                <Text style={styles.helpText}>
-                🔹 Qualidade = (Peças Boas / Total de Peças) x 100
-                </Text>
-                <Text style={styles.helpText}>
-                🔹 OEE Total = (Disponibilidade x Desempenho x Qualidade) / 10000
-                </Text>
-
-                <Text style={styles.helpSectionTitle}>Como utilizar esta ferramenta?</Text>
-                <Text style={styles.helpText}>
-                    🔹 Insira os dados de produção, incluindo tempo de turno, pausas, tempo de inatividade, total de peças produzidas e rejeitadas.{'\n\n'}
-                    🔹 Clique no botão "Calcular OEE" para obter os resultados.{'\n\n'}
-                    🔹 Analise os índices gerados para identificar possíveis gargalos e melhorar a eficiência produtiva.
-                </Text>
-
-                <Text style={styles.helpSectionTitle}>Padrões Mundiais de OEE</Text>
-                <Text style={styles.helpText}>
-                  🔹 O OEE de Classe Mundial para indústrias de manufatura discreta é geralmente 85% ou superior.{'\n\n'}
-                  🔹 Estudos indicam que a média global do OEE em fábricas de manufatura discreta é de aproximadamente 60%.
-                </Text>
-              </ScrollView>
+              </View>
             </View>
-          </View>
-        </Modal>
+
+            {/* Seção Cálculo */}
+            <View style={styles.helpSection}>
+              <View style={styles.sectionHeader}>
+                <MaterialCommunityIcons name="calculator" size={20} color="#1a73e8" />
+                <Text style={styles.helpSectionTitle}>Como é calculado?</Text>
+              </View>
+              
+              <View style={styles.formulaCard}>
+                <View style={styles.formulaRow}>
+                  <MaterialCommunityIcons name="numeric-1-box" size={20} color="#1a73e8" />
+                  <Text style={styles.formulaText}>
+                    <Text style={styles.formulaHighlight}>Disponibilidade</Text> = (Tempo de Operação / Tempo de Produção Planejado) × 100
+                  </Text>
+                </View>
+                
+                <View style={styles.formulaRow}>
+                  <MaterialCommunityIcons name="numeric-2-box" size={20} color="#1a73e8" />
+                  <Text style={styles.formulaText}>
+                    <Text style={styles.formulaHighlight}>Desempenho</Text> = ((Total de Peças / Tempo de Operação) / Taxa Ideal) × 100
+                  </Text>
+                </View>
+                
+                <View style={styles.formulaRow}>
+                  <MaterialCommunityIcons name="numeric-3-box" size={20} color="#1a73e8" />
+                  <Text style={styles.formulaText}>
+                    <Text style={styles.formulaHighlight}>Qualidade</Text> = (Peças Boas / Total de Peças) × 100
+                  </Text>
+                </View>
+                
+                <View style={styles.formulaRow}>
+                  <MaterialCommunityIcons name="equal-box" size={20} color="#1a73e8" />
+                  <Text style={styles.formulaText}>
+                    <Text style={styles.formulaHighlight}>OEE Total</Text> = (Disponibilidade × Desempenho × Qualidade) / 10000
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Seção Uso */}
+            <View style={styles.helpSection}>
+              <View style={styles.sectionHeader}>
+                <MaterialCommunityIcons name="toolbox-outline" size={20} color="#1a73e8" />
+                <Text style={styles.helpSectionTitle}>Como utilizar esta ferramenta?</Text>
+              </View>
+              
+              <View style={styles.stepContainer}>
+                <View style={styles.stepIndicator}>
+                  <Text style={styles.stepNumber}>1</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Preencha os dados</Text>
+                  <Text style={styles.stepDescription}>
+                    Insira todas as informações de produção nos campos correspondentes
+                  </Text>
+                </View>
+              </View>
+              
+              <View style={styles.stepContainer}>
+                <View style={styles.stepIndicator}>
+                  <Text style={styles.stepNumber}>2</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Calcule o OEE</Text>
+                  <Text style={styles.stepDescription}>
+                    Clique no botão "Calcular OEE" para processar os dados
+                  </Text>
+                </View>
+              </View>
+              
+              <View style={styles.stepContainer}>
+                <View style={styles.stepIndicator}>
+                  <Text style={styles.stepNumber}>3</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Analise os resultados</Text>
+                  <Text style={styles.stepDescription}>
+                    Verifique os gráficos e identifique oportunidades de melhoria
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Seção Padrões */}
+            <View style={styles.helpSection}>
+              <View style={styles.sectionHeader}>
+                <MaterialCommunityIcons name="medal-outline" size={20} color="#1a73e8" />
+                <Text style={styles.helpSectionTitle}>Padrões Mundiais de OEE</Text>
+              </View>
+              
+              <View style={styles.standardCard}>
+                <View style={styles.standardBadge}>
+                  <MaterialCommunityIcons name="trophy" size={16} color="#FFD700" />
+                  <Text style={styles.standardTitle}>Classe Mundial</Text>
+                </View>
+                <Text style={styles.standardValue}>85% ou superior</Text>
+                <Text style={styles.standardDescription}>
+                  Padrão excelente encontrado nas indústrias mais eficientes
+                </Text>
+              </View>
+              
+              <View style={[styles.standardCard, {marginTop: 10}]}>
+                <View style={styles.standardBadge}>
+                  <MaterialCommunityIcons name="chart-line" size={16} color="#2196F3" />
+                  <Text style={styles.standardTitle}>Média Global</Text>
+                </View>
+                <Text style={styles.standardValue}>~60%</Text>
+                <Text style={styles.standardDescription}>
+                  Valor médio encontrado na maioria das fábricas
+                </Text>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
     </SafeAreaView>
   );
 }
