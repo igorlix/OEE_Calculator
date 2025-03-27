@@ -22,59 +22,9 @@ export const styles = StyleSheet.create({
      right: 0,
      padding: 8,
    },
-   modalOverlay: {
-     flex: 1,
-     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-     justifyContent: 'center',
-     alignItems: 'center',
-     padding: 20,
-   },
-   modalContent: {
-     backgroundColor: 'white',
-     borderRadius: 12,
-     width: '100%',
-     maxHeight: '80%',
-     padding: 20,
-     shadowColor: '#000',
-     shadowOffset: { width: 0, height: 2 },
-     shadowOpacity: 0.25,
-     shadowRadius: 4,
-     elevation: 5,
-   },
-   modalHeader: {
-     flexDirection: 'row',
-     justifyContent: 'space-between',
-     alignItems: 'center',
-     marginBottom: 20,
-   },
-   modalTitle: {
-     fontSize: 20,
-     fontWeight: 'bold',
-     color: '#333',
-   },
-   modalScroll: {
-     maxHeight: '90%',
-   },
-   helpSectionTitle: {
-     fontSize: 18,
-     fontWeight: 'bold',
-     color: '#1a73e8',
-     marginTop: 16,
-     marginBottom: 8,
-   },
-   helpSubtitle: {
-     fontSize: 16,
-     fontWeight: '600',
-     color: '#333',
-     marginTop: 12,
-     marginBottom: 4,
-   },
-   helpText: {
-     fontSize: 14,
-     color: '#666',
-     lineHeight: 20,
-     marginBottom: 12,
-   },
+   
+  
+
    container: {
      flex: 1,
      backgroundColor: '#f5f5f5',
@@ -257,4 +207,190 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
+  buttonDisabled: {
+    backgroundColor: '#ADD8E6',
+    opacity: 0.6,
+  },
+    metricsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
+  },
+  oeeTotalContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+    
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    width: '100%',
+    maxHeight: '85%',
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  modalTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginLeft: 10,
+  },
+  closeButton: {
+    padding: 5,
+  },
+  modalScroll: {
+    maxHeight: '90%',
+  },
+  helpSection: {
+    marginBottom: 25,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  helpSectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1a73e8',
+    marginLeft: 10,
+  },
+  helpText: {
+    fontSize: 14,
+    color: '#555',
+    lineHeight: 22,
+    marginBottom: 15,
+  },
+  factorContainer: {
+    marginBottom: 12,
+  },
+  factorPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    marginBottom: 5,
+  },
+  helpSubtitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 5,
+  },
+  factorDescription: {
+    fontSize: 13,
+    color: '#666',
+    lineHeight: 18,
+    paddingLeft: 10,
+    borderLeftWidth: 2,
+    borderLeftColor: '#eee',
+    marginLeft: 5,
+  },
+  formulaCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    padding: 15,
+    marginTop: 5,
+  },
+  formulaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  formulaText: {
+    fontSize: 13,
+    color: '#444',
+    marginLeft: 10,
+    flex: 1,
+  },
+  formulaHighlight: {
+    fontWeight: 'bold',
+    color: '#1a73e8',
+  },
+  stepContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  stepIndicator: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#1a73e8',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  stepNumber: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  stepContent: {
+    flex: 1,
+  },
+  stepTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 3,
+  },
+  stepDescription: {
+    fontSize: 13,
+    color: '#666',
+    lineHeight: 18,
+  },
+  standardCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    padding: 15,
+  },
+  standardBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  standardTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 5,
+  },
+  standardValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1a73e8',
+    marginVertical: 3,
+  },
+  standardDescription: {
+    fontSize: 13,
+    color: '#666',
+    lineHeight: 18,
+  },
+  
  });
