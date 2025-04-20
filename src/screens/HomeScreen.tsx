@@ -198,7 +198,7 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
                     const numericValue = value.replace(/[^0-9]/g, '');
                     setInputs(prev => ({ ...prev, duracaoTurno: numericValue }));
                     }}
-                    placeholder="Ex: 8 horas ou 480 minutos"
+                    placeholder="Ex:8 horas ou 480 minutos "
                     placeholderTextColor="#999"
                 />
                 <TouchableOpacity
