@@ -93,72 +93,72 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
     label?: string;
     small?: boolean;
   }
-  
+
   const CircularProgress = ({
-    size,
-    strokeWidth,
-    progress,
-    color,
-    label,
-    small = false
-  }: CircularProgressProps) => {
+                              size,
+                              strokeWidth,
+                              progress,
+                              color,
+                              label,
+                              small = false
+                            }: CircularProgressProps) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = radius * 2 * Math.PI;
     const strokeDashoffset = circumference - (progress / 100) * circumference;
-  
+
     return (
-      <View style={{ alignItems: 'center', margin: small ? 5 : 10 }}>
-        <Svg width={size} height={size}>
-          <G rotation="-90" origin={`${size / 2}, ${size / 2}`}>
-            <Circle
-              stroke="#E0E0E0"
-              fill="transparent"
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              strokeWidth={strokeWidth}
-            />
-            <Circle
-              stroke={color}
-              fill="transparent"
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              strokeWidth={strokeWidth}
-              strokeDasharray={`${circumference}, ${circumference}`}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-            />
-          </G>
-          <SvgText
-            x={size / 2}
-            y={size / 2 + (small ? 5 : 10)}
-            textAnchor="middle"
-            fill={color}
-            fontSize={small ? 14 : 40} 
-            fontWeight="bold"
-          >
-            {`${progress}%`}
-          </SvgText>
-        </Svg>
-        {label && (
-          <Text style={[
-            label === 'OEE Total' ? { 
-              fontSize: 40, 
-              fontWeight: 'bold',
-              color,
-              marginTop: 10
-            } : { 
-              color, 
-              marginTop: 5, 
-              fontWeight: '600',
-              fontSize: 16
-            }
-          ]}>
-            {label}
-          </Text>
-        )}
-      </View>
+        <View style={{ alignItems: 'center', margin: small ? 5 : 10 }}>
+          <Svg width={size} height={size}>
+            <G rotation="-90" origin={`${size / 2}, ${size / 2}`}>
+              <Circle
+                  stroke="#E0E0E0"
+                  fill="transparent"
+                  cx={size / 2}
+                  cy={size / 2}
+                  r={radius}
+                  strokeWidth={strokeWidth}
+              />
+              <Circle
+                  stroke={color}
+                  fill="transparent"
+                  cx={size / 2}
+                  cy={size / 2}
+                  r={radius}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={`${circumference}, ${circumference}`}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+              />
+            </G>
+            <SvgText
+                x={size / 2}
+                y={size / 2 + (small ? 5 : 10)}
+                textAnchor="middle"
+                fill={color}
+                fontSize={small ? 14 : 40}
+                fontWeight="bold"
+            >
+              {`${progress}%`}
+            </SvgText>
+          </Svg>
+          {label && (
+              <Text style={[
+                label === 'OEE Total' ? {
+                  fontSize: 40,
+                  fontWeight: 'bold',
+                  color,
+                  marginTop: 10
+                } : {
+                  color,
+                  marginTop: 5,
+                  fontWeight: '600',
+                  fontSize: 16
+                }
+              ]}>
+                {label}
+              </Text>
+          )}
+        </View>
     );
   };
 
@@ -198,7 +198,7 @@ export default function HomeScreen() {  const [inputs, setInputs] = useState({
                     const numericValue = value.replace(/[^0-9]/g, '');
                     setInputs(prev => ({ ...prev, duracaoTurno: numericValue }));
                     }}
-                    placeholder="Ex: 8 horas ou 480 minutos"
+                    placeholder="Ex:8 horas ou 480 minutos "
                     placeholderTextColor="#999"
                 />
                 <TouchableOpacity

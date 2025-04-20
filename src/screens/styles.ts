@@ -22,9 +22,6 @@ export const styles = StyleSheet.create({
      right: 0,
      padding: 8,
    },
-   
-  
-
    container: {
      flex: 1,
      backgroundColor: '#f5f5f5',
@@ -299,9 +296,9 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   helpSubtitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 5,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#666',
   },
   factorDescription: {
     fontSize: 13,
